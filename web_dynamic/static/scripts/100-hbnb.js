@@ -20,12 +20,20 @@ window.addEventListener('load', function () {
       $('div.amenities h4').text(Object.values(amenity_ids).join(', '));
     }
   });
+
+  const state_ids = {};
+  const city_ids = {};
+
   $('.filters button').click(function () {
     $.ajax({
       type: 'POST',
       url: 'http://0.0.0.0:5001/api/v1/places_search/',
       contentType: 'application/json',
-      data: JSON.stringify({})
+      data: JSON.stringify({
+        amenities: Object.keys(amenity_ids)
+        states: Object.keys(state_ids)
+        cities: Object.keys(city_ids)
+      })
     }).done(function (data) {
       $('section.places').empty();
       $('section.places').append('<h1>Places</h1>');
@@ -62,7 +70,33 @@ window.addEventListener('load', function () {
 
       </article>`;
         $('section.places').append(template);
-     }
+      }
     });
+  });
+
+  $('.checkbox').click(function () {
+    if ($(this).prop('checked')) {
+      state_ids[$(this).attr('data-id')] = $(this).attr('data-name');
+    } else if (!$(this).prop('checked')) {
+      delete state_ids[$(this).attr('data-id')];
+    }
+    if (Object.keys(state_ids).length === 0 && Object.keys(city_ids).length === 0) {
+      $('.locations h4').html('&nbsp;');
+    } else {
+      $('.locations h4').text(Object.values(state_ids).concat(Object.values(city_ids).join(', '));
+    }
+  });
+
+  $('.checkbox').click(function () {
+    if ($(this).prop('checked')) {
+      city_ids[$(this).attr('data-id')] = $(this).attr('data-name');
+    } else if (!$(this).prop('checked')) {
+      delete city_ids[$(this).attr('data-id')];
+    }
+    if (Object.keys(state_ids).length === 0 && Object.keys(city_ids).length === 0) {
+      $('.locations h4').html('&nbsp;');
+    } else {
+      $('.locations h4').text(Object.values(city_ids).concat(Object.values(state_ids)).join(', '));
+    }
   });
 });
